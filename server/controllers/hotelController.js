@@ -21,8 +21,28 @@ export const createHotel = async (req, res) => {
             price,
         } = req.body;
         const image = req.file ? `/uploads/${req.file.filename}` : "";
-        console.log("BODY :", req.body);
-        console.log("FILE :", req.file);
+        if(!title || !description || !latitude || !longitude || !price)
+        {
+            return res.status(400).json({
+                message: "All fields are required",
+            });
+        }
+        if(Number(price) <= 0){
+            return res.status(400).json({
+                message: "Price must be greater than 0",
+            });
+        }
+        if(Number(latitude) < -90 || Number(latitude) > 90){
+            return res.status(400).json({
+                message: "Invalid latitude",
+            });
+        }
+
+        if(Number(longitude) < -180 || Number(longitude) > 180){
+            return res.status(400).json({
+                message: "Invalid longitude",
+            });
+        }
         const result=await pool.query(
   `INSERT INTO hotels(image,title,description,latitude,longitude,price)
   VALUES($1, $2, $3, $4, $5, $6)
@@ -51,6 +71,28 @@ export const updateHotel = async(req,res) => {
         let image =  req.body.image;
         if(req.file){
             image = `/uploads/${req.file.filename}`;
+        }
+        if(!title || !description || !latitude || !longitude || !price)
+        {
+            return res.status(400).json({
+                message: "All fields are required",
+            });
+        }
+        if(Number(price) <= 0){
+            return res.status(400).json({
+                message: "Price must be greater than 0",
+            });
+        }
+        if(Number(latitude) < -90 || Number(latitude) > 90){
+            return res.status(400).json({
+                message: "Invalid latitude",
+            });
+        }
+
+        if(Number(longitude) < -180 || Number(longitude) > 180){
+            return res.status(400).json({
+                message: "Invalid longitude",
+            });
         }
         const result=await pool.query(
             `UPDATE hotels

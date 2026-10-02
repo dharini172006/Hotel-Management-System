@@ -40,9 +40,21 @@ function HotelForm({hotel,isEdit = false}) {
                 alert('Description is required')
                 return
             }
-            if(!formData.latitude || !formData.longitude){
-                alert('Latitude and Longitude are required')
-                return
+
+            if(
+                formData.latitude === '' || 
+                formData.longitude === '' 
+                        ){
+                            alert('Latitude and ongitude are required')
+                            return;
+                        }            
+            if(Number(formData.latitude) < -90 || Number(formData.latitude) > 90){
+                alert('Latitude must be between -90 and 90');
+                return;
+            }
+            if(Number(formData.longitude) < -180 || Number(formData.longitude) > 180){
+                alert("Longitude must be between -180 and 180");
+                return;
             }
             if(!formData.price || Number(formData.price) <= 0){
                 alert('Please enter a valid price')
@@ -56,8 +68,11 @@ function HotelForm({hotel,isEdit = false}) {
                 data.append("longitude",formData.longitude)
                 data.append("price",formData.price)
 
+
                 if(formData.image){
-                    data.append("image", formData.image)
+                    data.append("image", formData.image);
+                }else if(isEdit){
+                    data.append("image", hotel.image);
                 }
 
                 if(isEdit){
@@ -74,7 +89,9 @@ function HotelForm({hotel,isEdit = false}) {
             }
 }
         return (
-            <form onSubmit={handleSubmit} className="hotel-form">
+            <form onSubmit={handleSubmit} className="hotel-form"
+            noValidate
+            >
                 <h1>{isEdit ? 'EditHotel' : 'Add Hotel'}</h1>
                 <label>Title</label>
                 <input 
@@ -84,6 +101,7 @@ function HotelForm({hotel,isEdit = false}) {
                 onChange={handleChange}
 
                 />
+
                 <label>Description</label>
                 <textarea
                 name="description"
@@ -94,12 +112,18 @@ function HotelForm({hotel,isEdit = false}) {
                 <input 
                 type="number"
                 name="latitude"
+                min="-90"
+                max="90"
+                step="any"
                 value={formData.latitude}
                 onChange={handleChange}/>
                 <label>Longitude</label>
                 <input 
                 type="number"
                 name="longitude"
+                min="-180"
+                max="180"
+                step="any"
                 value={formData.longitude}
                 onChange={handleChange}
                 />
@@ -134,6 +158,8 @@ function HotelForm({hotel,isEdit = false}) {
                 <input
                 type="number"
                 name="price"
+                min="1"
+                step="0.01"
                 value={formData.price}
                 onChange={handleChange}
                 />
