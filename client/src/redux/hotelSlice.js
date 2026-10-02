@@ -29,8 +29,11 @@ const hotelSlice = createSlice({
     name: 'hotels' ,
     initialState,
     reducers: {
+        setHotels: (state,action) =>{
+            state.hotels = action.payload;
+        }, 
         addHotel: (state, action) => {
-            state.hotels.push(action.payload)
+            state.hotels.push(action.payload);
         },
         updateHotel:(state,action)=> {
             const index = state.hotels.findIndex(
@@ -51,6 +54,7 @@ const hotelSlice = createSlice({
 export default hotelSlice.reducer
 
 export const{
+    setHotels,
     addHotel,
     updateHotel,
     deleteHotel,

@@ -1,10 +1,13 @@
 import api from '../services/api'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { addHotel, updateHotel } from '../redux/hotelSlice'
 
 
 function HotelForm({hotel,isEdit = false}) {
     const navigate=useNavigate()
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         title: hotel?.title || '',
         description: hotel?.description || '',
@@ -58,11 +61,11 @@ function HotelForm({hotel,isEdit = false}) {
                 }
 
                 if(isEdit){
-                    await api.put(`/hotels/${hotel.id}`,data)
-                    alert('Hotel updated successfully')
+                    const res = await api.put(`/hotels/${hotel.id}`,data);
+                    dispatch(updateHotel(res.data));
                 }else{
-                    await api.post('/hotels',data)
-                    alert('Hotel added successfully')
+                    const res = await api.post("/hotels",data);
+                    dispatch(addHotel(res.data));
                 }
                 navigate('/')
             }   catch(error){

@@ -2,13 +2,19 @@ import api from '../services/api'
 import { useState,useEffect } from 'react'
 import HotelCard from '../components/HotelCard'
 import { useNavigate } from 'react-router-dom'
-
+import  Pagination from '../components/Pagination';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHotels, deleteHotel } from "../redux/hotelSlice";
+import HotelList from "../components/HotelList";
 
 
 function Home() {
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+const hotels = useSelector(
+    (state ) => state.hotels.hotels
+);
     const [loading, setLoading] = useState(true)
-    const [hotels, setHotels] = useState([])
     const [search, setSearch] = useState('')
     const[minPrice, setMinPrice] = useState('')
     const[maxPrice, setMaxPrice] = useState('')
@@ -24,25 +30,25 @@ function Home() {
     }, [search, minPrice, maxPrice, sortOrder])
     const fetchHotels = async() => {
         try{
-            setLoading(true)
-            const res=await api.get("/hotels")
-            setHotels(res.data)
+            setLoading(true);
+            const res=await api.get("/hotels");
+            dispatch(setHotels(res.data));
         }catch(error){
-            console.error(error)
+            console.error(error);
         }finally{
-            setLoading(false)
+            setLoading(false);
         }
     }
    
     
     const handleDelete = async (id) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this hotel?')
+        const confirmDelete = window.confirm('Are you sure you want to delete this hotel?');
         if(!confirmDelete){
-            return
+            return;
         }
         try{
-            await api.delete(`/hotels/${id}`)
-            fetchHotels()
+            await api.delete(`/hotels/${id}`);
+            dispatch(deleteHotel(id));
             setShowMessage(true)
         setTimeout(() => {
             setShowMessage(false)
@@ -50,7 +56,9 @@ function Home() {
     }catch(error){
         console.error(error)
     }
-}
+};
+
+
 
     let filteredHotels = hotels.filter((hotel) =>{
       const matchesSearch = hotel.title
@@ -163,37 +171,17 @@ if(loading){
 {currentHotels.length === 0 ? (
     <h2 style={{ textAlign: "center"}}>No hotels found</h2>
 ) : (
-    <div className="hotel-list">
-        {currentHotels.map((hotel) => (
-            <HotelCard  
-            key={hotel.id}
-            hotel={hotel}
-            onDelete={handleDelete} 
-            />
-        ))}
-        </div>
+    <HotelList
+    hotels={currentHotels}
+    onDelete={handleDelete}
+    />
 )}
 
-        {totalPages > 1 && (
-            <div className="pagination">
-                <button
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                >
-                    Previous
-                </button>
-                <span>
-                    Page {currentPage} of {totalPages}
-                </span>
-                <button 
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                >
-                    Next
-                </button>
-                </div>
-        )}
-        
+       <Pagination
+       currentPage={currentPage}
+       totalPages={totalPages}
+       setCurrentPage={setCurrentPage}
+       />
 <footer className="footer">
     <h3>Hotel Management System</h3>
     <p>Developed by DHARINI K</p>

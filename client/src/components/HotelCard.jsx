@@ -21,12 +21,6 @@ function HotelCard({ hotel, onDelete }) {
                 <p className="hotel-id">Hotel ID: {hotel.id}</p>
                 <p className="price">₹{hotel.price}</p>
                 <p>{hotel.description}</p>
-                <button 
-                className="favourite-btn"
-                onClick={() => alert("Added to favourites")}
-                >
-                    ❤️
-                </button>
 
                 <button onClick={() => navigate(`/hotels/${hotel.id}`)}>
                     ViewDetails
